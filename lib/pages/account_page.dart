@@ -57,8 +57,10 @@ class _AccountPageState extends AuthState<AccountPage> {
         .upsert(updates)
         .execute();
     if (response.error != null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(response.error!.message)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(response.error!.message),
+        backgroundColor: Colors.red,
+      ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Successfully updated profile!')));
@@ -66,6 +68,17 @@ class _AccountPageState extends AuthState<AccountPage> {
     setState(() {
       _loading = false;
     });
+  }
+
+  Future<void> _signOut() async {
+    final response = await Supabase.instance.client.auth.signOut();
+    if (response.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(response.error!.message),
+        backgroundColor: Colors.red,
+      ));
+    }
+    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override
@@ -79,12 +92,6 @@ class _AccountPageState extends AuthState<AccountPage> {
     _usernameController.dispose();
     _websiteController.dispose();
     super.dispose();
-  }
-
-  @override
-  void onUnauthenticated() {
-    Navigator.of(context).pushReplacementNamed('/login');
-    super.onUnauthenticated();
   }
 
   @override
@@ -108,9 +115,7 @@ class _AccountPageState extends AuthState<AccountPage> {
               onPressed: _updateProfile,
               child: Text(_loading ? 'Saving...' : 'Update')),
           const SizedBox(height: 18),
-          ElevatedButton(
-              onPressed: () => Supabase.instance.client.auth.signOut(),
-              child: const Text('Sign Out')),
+          ElevatedButton(onPressed: _signOut, child: const Text('Sign Out')),
         ],
       ),
     );

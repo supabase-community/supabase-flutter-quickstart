@@ -23,8 +23,10 @@ class _LoginPageState extends AuthState<LoginPage> {
         options: AuthOptions(
             redirectTo: 'io.supabase.flutterquickstart://login-callback/'));
     if (response.error != null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(response.error!.message)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(response.error!.message),
+        backgroundColor: Colors.red,
+      ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Check your email for login link!')));

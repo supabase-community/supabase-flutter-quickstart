@@ -23,6 +23,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         primaryColor: Colors.green,
         accentColor: Colors.green,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            onPrimary: Colors.white,
+            primary: Colors.green,
+          ),
+        ),
       ),
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
