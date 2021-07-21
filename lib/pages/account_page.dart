@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase_flutter_guide/components/auth_state.dart';
 import 'package:supabase_flutter_guide/utils/constants.dart';
 
@@ -20,7 +19,7 @@ class _AccountPageState extends AuthState<AccountPage> {
       _loading = true;
     });
     final user = supabase.auth.user()!;
-    final response = await Supabase.instance.client
+    final response = await supabase
         .from('profiles')
         .select()
         .eq('id', user.id)
@@ -45,17 +44,14 @@ class _AccountPageState extends AuthState<AccountPage> {
     });
     final userName = _usernameController.text;
     final website = _websiteController.text;
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = supabase.auth.currentUser;
     final updates = {
       'id': user!.id,
       'username': userName,
       'website': website,
       'updated_at': DateTime.now().toIso8601String(),
     };
-    final response = await Supabase.instance.client
-        .from('profiles')
-        .upsert(updates)
-        .execute();
+    final response = await supabase.from('profiles').upsert(updates).execute();
     if (response.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(response.error!.message),
@@ -71,7 +67,7 @@ class _AccountPageState extends AuthState<AccountPage> {
   }
 
   Future<void> _signOut() async {
-    final response = await Supabase.instance.client.auth.signOut();
+    final response = await supabase.auth.signOut();
     if (response.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(response.error!.message),

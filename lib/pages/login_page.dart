@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase_flutter_guide/components/auth_state.dart';
 import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter_guide/utils/constants.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -18,7 +18,7 @@ class _LoginPageState extends AuthState<LoginPage> {
     setState(() {
       _isLoading = true;
     });
-    final response = await Supabase.instance.client.auth.signIn(
+    final response = await supabase.auth.signIn(
         email: _emailController.text,
         options: AuthOptions(
             redirectTo: 'io.supabase.flutterquickstart://login-callback/'));
