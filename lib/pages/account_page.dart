@@ -50,8 +50,7 @@ class _AccountPageState extends AuthState<AccountPage> {
       'id': user!.id,
       'username': userName,
       'website': website,
-      'avatar_url': '',
-      'updated_at': DateTime.now(),
+      'updated_at': DateTime.now().toIso8601String(),
     };
     final response = await Supabase.instance.client
         .from('profiles')
@@ -60,6 +59,9 @@ class _AccountPageState extends AuthState<AccountPage> {
     if (response.error != null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(response.error!.message)));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Successfully updated profile!')));
     }
     setState(() {
       _loading = false;
@@ -77,6 +79,12 @@ class _AccountPageState extends AuthState<AccountPage> {
     _usernameController.dispose();
     _websiteController.dispose();
     super.dispose();
+  }
+
+  @override
+  void onUnauthenticated() {
+    Navigator.of(context).pushReplacementNamed('/login');
+    super.onUnauthenticated();
   }
 
   @override
