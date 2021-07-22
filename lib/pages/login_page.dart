@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter_guide/components/auth_state.dart';
 import 'package:supabase/supabase.dart';
@@ -21,7 +22,9 @@ class _LoginPageState extends AuthState<LoginPage> {
     final response = await supabase.auth.signIn(
         email: _emailController.text,
         options: AuthOptions(
-            redirectTo: 'io.supabase.flutterquickstart://login-callback/'));
+            redirectTo: kIsWeb
+                ? null
+                : 'io.supabase.flutterquickstart://login-callback/'));
     if (response.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(response.error!.message),
