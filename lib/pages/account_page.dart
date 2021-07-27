@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter_guide/components/auth_state.dart';
+import 'package:supabase_flutter_guide/components/auth_required_state.dart';
 import 'package:supabase_flutter_guide/utils/constants.dart';
+import 'package:supabase/supabase.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -9,20 +10,19 @@ class AccountPage extends StatefulWidget {
   _AccountPageState createState() => _AccountPageState();
 }
 
-class _AccountPageState extends AuthState<AccountPage> {
+class _AccountPageState extends AuthRequiredState<AccountPage> {
   late final _usernameController = TextEditingController();
   late final _websiteController = TextEditingController();
   var _loading = false;
 
-  Future<void> _getProfile() async {
+  Future<void> _getProfile(String userId) async {
     setState(() {
       _loading = true;
     });
-    final user = supabase.auth.user()!;
     final response = await supabase
         .from('profiles')
         .select()
-        .eq('id', user.id)
+        .eq('id', userId)
         .single()
         .execute();
     if (response.error != null && response.status != 406) {
@@ -78,9 +78,11 @@ class _AccountPageState extends AuthState<AccountPage> {
   }
 
   @override
-  void initState() {
-    _getProfile();
-    super.initState();
+  void onAuthenticated(Session session) {
+    final user = session.user;
+    if (user != null) {
+      _getProfile(user.id);
+    }
   }
 
   @override
@@ -88,6 +90,11 @@ class _AccountPageState extends AuthState<AccountPage> {
     _usernameController.dispose();
     _websiteController.dispose();
     super.dispose();
+  }
+
+  @override
+  void onUnauthenticated() {
+    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override
