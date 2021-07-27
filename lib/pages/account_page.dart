@@ -86,15 +86,15 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
   }
 
   @override
+  void onUnauthenticated() {
+    Navigator.of(context).pushReplacementNamed('/login');
+  }
+
+  @override
   void dispose() {
     _usernameController.dispose();
     _websiteController.dispose();
     super.dispose();
-  }
-
-  @override
-  void onUnauthenticated() {
-    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override
