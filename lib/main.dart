@@ -4,10 +4,10 @@ import 'package:supabase_flutter_guide/pages/account_page.dart';
 import 'package:supabase_flutter_guide/pages/login_page.dart';
 import 'package:supabase_flutter_guide/pages/splash_page.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  Supabase.initialize(
+  await Supabase.initialize(
     // TODO: Replace credentials with your own
     url: '[YOUR_SUPABASE_URL]',
     anonKey: '[YOUR_SUPABASE_ANNON_KEY]',
