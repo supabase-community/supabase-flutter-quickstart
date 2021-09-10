@@ -9,8 +9,9 @@ Future<void> main() async {
 
   await Supabase.initialize(
     // TODO: Replace credentials with your own
-    url: '[YOUR_SUPABASE_URL]',
-    anonKey: '[YOUR_SUPABASE_ANNON_KEY]',
+    url: 'https://dbcbbaiqjhiotqgvxits.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYyNDc0MTAyNCwiZXhwIjoxOTQwMzE3MDI0fQ.ZUOgvILUoIoAcOTIfCkApJ19jR3HxZv9SZlswjSv0L4',
   );
   runApp(MyApp());
 }
@@ -22,7 +23,6 @@ class MyApp extends StatelessWidget {
       title: 'Supabase Flutter',
       theme: ThemeData.dark().copyWith(
         primaryColor: Colors.green,
-        accentColor: Colors.green,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             onPrimary: Colors.white,
