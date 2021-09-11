@@ -30,9 +30,10 @@ class _LoginPageState extends AuthState<LoginPage> {
       context.showErrorSnackBar(message: error.message);
     } else {
       context.showSnackBar(message: 'Check your email for login link!');
-    }
-    setState(() {
       _emailController.clear();
+    }
+
+    setState(() {
       _isLoading = false;
     });
   }

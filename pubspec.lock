@@ -379,7 +379,7 @@ packages:
     source: hosted
     version: "0.1.0"
   universal_io:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: universal_io
       url: "https://pub.dartlang.org"
