@@ -71,10 +71,7 @@ class _ProfileImageState extends State<ProfileImage> {
 
     final error = response.error;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(error.message),
-        backgroundColor: Colors.red,
-      ));
+      context.showErrorSnackBar(message: error.message);
       return;
     }
     final imageUrl = response.data!;
