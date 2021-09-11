@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter_guide/components/auth_state.dart';
 import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter_guide/components/auth_state.dart';
 import 'package:supabase_flutter_guide/utils/constants.dart';
 
 class LoginPage extends StatefulWidget {
@@ -25,14 +25,11 @@ class _LoginPageState extends AuthState<LoginPage> {
             redirectTo: kIsWeb
                 ? null
                 : 'io.supabase.flutterquickstart://login-callback/'));
-    if (response.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(response.error!.message),
-        backgroundColor: Colors.red,
-      ));
+    final error = response.error;
+    if (error != null) {
+      context.showErrorSnackBar(message: error.message);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Check your email for login link!')));
+      context.showSnackBar(message: 'Check your email for login link!');
     }
     setState(() {
       _emailController.clear();

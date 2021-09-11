@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter_guide/components/auth_required_state.dart';
-import 'package:supabase_flutter_guide/utils/constants.dart';
 import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter_guide/components/auth_required_state.dart';
+import 'package:supabase_flutter_guide/components/avatar.dart';
+import 'package:supabase_flutter_guide/utils/constants.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -11,8 +12,10 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends AuthRequiredState<AccountPage> {
-  late final _usernameController = TextEditingController();
-  late final _websiteController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _websiteController = TextEditingController();
+  String? _userId;
+  String? _avatarUrl;
   var _loading = false;
 
   Future<void> _getProfile(String userId) async {
@@ -25,13 +28,15 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
         .eq('id', userId)
         .single()
         .execute();
-    if (response.error != null && response.status != 406) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(response.error!.message)));
+    final error = response.error;
+    if (error != null && response.status != 406) {
+      context.showErrorSnackBar(message: error.message);
     }
-    if (response.data != null) {
-      _usernameController.text = response.data!['username'] as String;
-      _websiteController.text = response.data!['website'] as String;
+    final data = response.data;
+    if (data != null) {
+      _usernameController.text = (data['username'] ?? '') as String;
+      _websiteController.text = (data['website'] ?? '') as String;
+      _avatarUrl = (data['avatar_url'] ?? '') as String;
     }
     setState(() {
       _loading = false;
@@ -52,14 +57,11 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
       'updated_at': DateTime.now().toIso8601String(),
     };
     final response = await supabase.from('profiles').upsert(updates).execute();
-    if (response.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(response.error!.message),
-        backgroundColor: Colors.red,
-      ));
+    final error = response.error;
+    if (error != null) {
+      context.showErrorSnackBar(message: error.message);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Successfully updated profile!')));
+      context.showSnackBar(message: 'Successfully updated profile!');
     }
     setState(() {
       _loading = false;
@@ -68,11 +70,9 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
 
   Future<void> _signOut() async {
     final response = await supabase.auth.signOut();
-    if (response.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(response.error!.message),
-        backgroundColor: Colors.red,
-      ));
+    final error = response.error;
+    if (error != null) {
+      context.showErrorSnackBar(message: error.message);
     }
     Navigator.of(context).pushReplacementNamed('/login');
   }
@@ -81,6 +81,7 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
   void onAuthenticated(Session session) {
     final user = session.user;
     if (user != null) {
+      _userId = user.id;
       _getProfile(user.id);
     }
   }
@@ -104,6 +105,24 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
         children: [
+          Avatar(
+            imageUrl: _avatarUrl,
+            onUpload: (imageUrl) async {
+              final response = await supabase.from('profiles').upsert({
+                'id': _userId,
+                'avatar_url': imageUrl,
+              }).execute();
+              final error = response.error;
+              if (error != null) {
+                context.showErrorSnackBar(message: error.message);
+              }
+              setState(() {
+                _avatarUrl = imageUrl;
+              });
+              context.showSnackBar(message: 'Updated your profile image!');
+            },
+          ),
+          const SizedBox(height: 18),
           TextFormField(
             controller: _usernameController,
             decoration: const InputDecoration(labelText: 'User Name'),

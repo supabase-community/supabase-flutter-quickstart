@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter_guide/utils/constants.dart';
 
 class AuthState<T extends StatefulWidget> extends SupabaseAuthState<T> {
   @override
@@ -23,6 +24,9 @@ class AuthState<T extends StatefulWidget> extends SupabaseAuthState<T> {
 
   @override
   void onErrorAuthenticating(String message) {
-    print('Error authenticating $message');
+    context.showSnackBar(
+      message: message,
+      backgroundColor: Colors.red,
+    );
   }
 }
