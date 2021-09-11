@@ -74,7 +74,8 @@ class _ProfileImageState extends State<ProfileImage> {
       context.showErrorSnackBar(message: error.message);
       return;
     }
-    final imageUrl = response.data!;
-    widget.onUpload(imageUrl);
+    final imageUrlResponse =
+        supabase.storage.from('avatars').getPublicUrl(filePath);
+    widget.onUpload(imageUrlResponse.data!);
   }
 }

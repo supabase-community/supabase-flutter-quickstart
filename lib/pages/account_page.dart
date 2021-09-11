@@ -14,7 +14,7 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends AuthRequiredState<AccountPage> {
   final _usernameController = TextEditingController();
   final _websiteController = TextEditingController();
-  late final String _userId;
+  String? _userId;
   String? _avatarUrl;
   var _loading = false;
 
@@ -119,6 +119,7 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
               setState(() {
                 _avatarUrl = imageUrl;
               });
+              context.showSnackBar(message: 'Updated your profile image!');
             },
           ),
           const SizedBox(height: 18),
