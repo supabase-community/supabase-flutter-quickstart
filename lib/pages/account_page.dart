@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
 import 'package:supabase_flutter_guide/components/auth_required_state.dart';
-import 'package:supabase_flutter_guide/components/profile_image.dart';
+import 'package:supabase_flutter_guide/components/avatar.dart';
 import 'package:supabase_flutter_guide/utils/constants.dart';
 
 class AccountPage extends StatefulWidget {
@@ -105,7 +105,7 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
         children: [
-          ProfileImage(
+          Avatar(
             imageUrl: _avatarUrl,
             onUpload: (imageUrl) async {
               final response = await supabase.from('profiles').upsert({

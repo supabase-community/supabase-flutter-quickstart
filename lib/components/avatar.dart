@@ -3,8 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter_guide/utils/constants.dart';
 import 'package:universal_io/io.dart';
 
-class ProfileImage extends StatefulWidget {
-  const ProfileImage({
+class Avatar extends StatefulWidget {
+  const Avatar({
     Key? key,
     required this.imageUrl,
     required this.onUpload,
@@ -14,10 +14,10 @@ class ProfileImage extends StatefulWidget {
   final void Function(String) onUpload;
 
   @override
-  _ProfileImageState createState() => _ProfileImageState();
+  _AvatarState createState() => _AvatarState();
 }
 
-class _ProfileImageState extends State<ProfileImage> {
+class _AvatarState extends State<Avatar> {
   bool _isLoading = false;
 
   @override
