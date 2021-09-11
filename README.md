@@ -4,7 +4,7 @@ This repo is a quick sample of how you can get started building apps using Flutt
 
 This repo will demonstrate how to:
 - sign users in with Supabase Auth using [magic link](https://supabase.io/docs/reference/dart/auth-signin#sign-in-with-magic-link)
-- store data inside [Supabase database](https://supabase.io/docs/guides/database)
+- store and retrieve data with [Supabase database](https://supabase.io/docs/guides/database)
 - store image files in [Supabase storage](https://supabase.io/docs/guides/storage)
 
 <img height="500px" src="https://supabase.io/img/supabase-flutter-demo.png" alt="Supabase User Management example" />
