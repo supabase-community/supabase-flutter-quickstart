@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter_guide/utils/constants.dart';
-import 'package:universal_io/io.dart';
 
 class Avatar extends StatefulWidget {
   const Avatar({
@@ -60,12 +59,12 @@ class _AvatarState extends State<Avatar> {
     }
     setState(() => _isLoading = true);
 
-    final file = File(imageFile.path);
-    final fileExt = file.path.split('.').last;
+    final bytes = await imageFile.readAsBytes();
+    final fileExt = imageFile.path.split('.').last;
     final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
     final filePath = fileName;
     final response =
-        await supabase.storage.from('avatars').upload(filePath, file);
+        await supabase.storage.from('avatars').uploadBinary(filePath, bytes);
 
     setState(() => _isLoading = false);
 

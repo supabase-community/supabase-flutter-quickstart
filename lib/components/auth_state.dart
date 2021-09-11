@@ -24,9 +24,6 @@ class AuthState<T extends StatefulWidget> extends SupabaseAuthState<T> {
 
   @override
   void onErrorAuthenticating(String message) {
-    context.showSnackBar(
-      message: message,
-      backgroundColor: Colors.red,
-    );
+    context.showErrorSnackBar(message: message);
   }
 }
