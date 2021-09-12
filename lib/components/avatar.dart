@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:supabase_flutter_guide/utils/constants.dart';
+import 'package:supabase_quickstart/utils/constants.dart';
 
 class Avatar extends StatefulWidget {
   const Avatar({
