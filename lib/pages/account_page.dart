@@ -18,6 +18,7 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
   String? _avatarUrl;
   var _loading = false;
 
+  /// Called once a user id is received within `onAuthenticated()`
   Future<void> _getProfile(String userId) async {
     setState(() {
       _loading = true;
@@ -43,6 +44,7 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
     });
   }
 
+  /// Called when user taps `Update` button
   Future<void> _updateProfile() async {
     setState(() {
       _loading = true;
@@ -77,6 +79,22 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
     Navigator.of(context).pushReplacementNamed('/login');
   }
 
+  /// Called when image has been uploaded to Supabase storage from within Avatar widget
+  Future<void> _onUpload(String imageUrl) async {
+    final response = await supabase.from('profiles').upsert({
+      'id': _userId,
+      'avatar_url': imageUrl,
+    }).execute();
+    final error = response.error;
+    if (error != null) {
+      context.showErrorSnackBar(message: error.message);
+    }
+    setState(() {
+      _avatarUrl = imageUrl;
+    });
+    context.showSnackBar(message: 'Updated your profile image!');
+  }
+
   @override
   void onAuthenticated(Session session) {
     final user = session.user;
@@ -107,20 +125,7 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
         children: [
           Avatar(
             imageUrl: _avatarUrl,
-            onUpload: (imageUrl) async {
-              final response = await supabase.from('profiles').upsert({
-                'id': _userId,
-                'avatar_url': imageUrl,
-              }).execute();
-              final error = response.error;
-              if (error != null) {
-                context.showErrorSnackBar(message: error.message);
-              }
-              setState(() {
-                _avatarUrl = imageUrl;
-              });
-              context.showSnackBar(message: 'Updated your profile image!');
-            },
+            onUpload: _onUpload,
           ),
           const SizedBox(height: 18),
           TextFormField(
