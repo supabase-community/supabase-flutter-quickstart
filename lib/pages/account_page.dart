@@ -76,7 +76,6 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
     if (error != null) {
       context.showErrorSnackBar(message: error.message);
     }
-    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   /// Called when image has been uploaded to Supabase storage from within Avatar widget
@@ -102,11 +101,6 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
       _userId = user.id;
       _getProfile(user.id);
     }
-  }
-
-  @override
-  void onUnauthenticated() {
-    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override
@@ -142,7 +136,7 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
               onPressed: _updateProfile,
               child: Text(_loading ? 'Saving...' : 'Update')),
           const SizedBox(height: 18),
-          ElevatedButton(onPressed: _signOut, child: const Text('Sign Out')),
+          TextButton(onPressed: _signOut, child: const Text('Sign Out')),
         ],
       ),
     );
