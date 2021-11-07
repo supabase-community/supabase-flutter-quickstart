@@ -22,6 +22,11 @@ class MyApp extends StatelessWidget {
       title: 'Supabase Flutter',
       theme: ThemeData.dark().copyWith(
         primaryColor: Colors.green,
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            primary: Colors.green,
+          ),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             onPrimary: Colors.white,
