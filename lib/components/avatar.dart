@@ -23,7 +23,7 @@ class _AvatarState extends State<Avatar> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.imageUrl == null)
+        if (widget.imageUrl == null )
           Container(
             width: 150,
             height: 150,
@@ -73,8 +73,8 @@ class _AvatarState extends State<Avatar> {
       context.showErrorSnackBar(message: error.message);
       return;
     }
-    final imageUrlResponse =
-        supabase.storage.from('avatars').getPublicUrl(filePath);
+    final imageUrlResponse = 
+      await supabase.storage.from('avatars').createSignedUrl(filePath, 60*60);
     widget.onUpload(imageUrlResponse.data!);
   }
 }
