@@ -23,7 +23,7 @@ class _AvatarState extends State<Avatar> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.imageUrl == null)
+        if (widget.imageUrl == null || widget.imageUrl!.isEmpty)
           Container(
             width: 150,
             height: 150,
