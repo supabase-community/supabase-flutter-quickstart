@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:supabase/supabase.dart';
-import 'package:supabase_quickstart/components/auth_required_state.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase_quickstart/components/avatar.dart';
 import 'package:supabase_quickstart/utils/constants.dart';
 
@@ -11,33 +10,31 @@ class AccountPage extends StatefulWidget {
   _AccountPageState createState() => _AccountPageState();
 }
 
-class _AccountPageState extends AuthRequiredState<AccountPage> {
+class _AccountPageState extends State<AccountPage> {
   final _usernameController = TextEditingController();
   final _websiteController = TextEditingController();
   String? _userId;
   String? _avatarUrl;
   var _loading = false;
 
-  /// Called once a user id is received within `onAuthenticated()`
-  Future<void> _getProfile(String userId) async {
+  Future<void> _getProfile() async {
     setState(() {
       _loading = true;
     });
-    final response = await supabase
-        .from('profiles')
-        .select()
-        .eq('id', userId)
-        .single()
-        .execute();
-    final error = response.error;
-    if (error != null && response.status != 406) {
-      context.showErrorSnackBar(message: error.message);
-    }
-    final data = response.data;
-    if (data != null) {
+    try {
+      final userId = Supabase.instance.client.auth.currentUser!.id;
+      final data =
+          await supabase.from('profiles').select().eq('id', userId).single();
+
       _usernameController.text = (data['username'] ?? '') as String;
       _websiteController.text = (data['website'] ?? '') as String;
       _avatarUrl = (data['avatar_url'] ?? '') as String;
+    } on GotrueError catch (error) {
+      context.showErrorSnackBar(message: error.message);
+    } on PostgrestError catch (error) {
+      context.showErrorSnackBar(message: error.message);
+    } catch (error) {
+      context.showErrorSnackBar(message: 'Unexpeted error occured');
     }
     setState(() {
       _loading = false;
@@ -58,12 +55,13 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
       'website': website,
       'updated_at': DateTime.now().toIso8601String(),
     };
-    final response = await supabase.from('profiles').upsert(updates).execute();
-    final error = response.error;
-    if (error != null) {
-      context.showErrorSnackBar(message: error.message);
-    } else {
+    try {
+      await supabase.from('profiles').upsert(updates);
       context.showSnackBar(message: 'Successfully updated profile!');
+    } on GotrueError catch (error) {
+      context.showErrorSnackBar(message: error.message);
+    } catch (error) {
+      context.showErrorSnackBar(message: 'Unexpected error occured');
     }
     setState(() {
       _loading = false;
@@ -71,22 +69,26 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
   }
 
   Future<void> _signOut() async {
-    final response = await supabase.auth.signOut();
-    final error = response.error;
-    if (error != null) {
+    try {
+      await supabase.auth.signOut();
+    } on GotrueError catch (error) {
       context.showErrorSnackBar(message: error.message);
+    } catch (error) {
+      context.showErrorSnackBar(message: 'Unexpected error occured');
     }
   }
 
   /// Called when image has been uploaded to Supabase storage from within Avatar widget
   Future<void> _onUpload(String imageUrl) async {
-    final response = await supabase.from('profiles').upsert({
-      'id': _userId,
-      'avatar_url': imageUrl,
-    }).execute();
-    final error = response.error;
-    if (error != null) {
+    try {
+      await supabase.from('profiles').upsert({
+        'id': _userId,
+        'avatar_url': imageUrl,
+      });
+    } on GotrueError catch (error) {
       context.showErrorSnackBar(message: error.message);
+    } catch (error) {
+      context.showErrorSnackBar(message: 'Unexpected error occured');
     }
     setState(() {
       _avatarUrl = imageUrl;
@@ -95,12 +97,9 @@ class _AccountPageState extends AuthRequiredState<AccountPage> {
   }
 
   @override
-  void onAuthenticated(Session session) {
-    final user = session.user;
-    if (user != null) {
-      _userId = user.id;
-      _getProfile(user.id);
-    }
+  void initState() {
+    super.initState();
+    _getProfile();
   }
 
   @override
