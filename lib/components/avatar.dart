@@ -49,8 +49,8 @@ class _AvatarState extends State<Avatar> {
   }
 
   Future<void> _upload() async {
-    final _picker = ImagePicker();
-    final imageFile = await _picker.pickImage(
+    final picker = ImagePicker();
+    final imageFile = await picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 300,
       maxHeight: 300,
@@ -73,9 +73,13 @@ class _AvatarState extends State<Avatar> {
       final imageUrl = supabase.storage.from('avatars').getPublicUrl(filePath);
       widget.onUpload(imageUrl);
     } on GotrueError catch (error) {
-      context.showErrorSnackBar(message: error.message);
+      if (mounted) {
+        context.showErrorSnackBar(message: error.message);
+      }
     } catch (error) {
-      context.showErrorSnackBar(message: 'Unexpected error occured');
+      if (mounted) {
+        context.showErrorSnackBar(message: 'Unexpected error occured');
+      }
     }
   }
 }

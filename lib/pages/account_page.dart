@@ -23,12 +23,15 @@ class _AccountPageState extends State<AccountPage> {
     });
     try {
       final userId = Supabase.instance.client.auth.currentUser!.id;
-      final data =
-          await supabase.from('profiles').select().eq('id', userId).single();
+      final data = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle() as Map<String, dynamic>?;
 
-      _usernameController.text = (data['username'] ?? '') as String;
-      _websiteController.text = (data['website'] ?? '') as String;
-      _avatarUrl = (data['avatar_url'] ?? '') as String;
+      _usernameController.text = (data?['username'] ?? '') as String;
+      _websiteController.text = (data?['website'] ?? '') as String;
+      _avatarUrl = (data?['avatar_url'] ?? '') as String;
     } on GotrueError catch (error) {
       context.showErrorSnackBar(message: error.message);
     } on PostgrestError catch (error) {
@@ -57,7 +60,9 @@ class _AccountPageState extends State<AccountPage> {
     };
     try {
       await supabase.from('profiles').upsert(updates);
-      context.showSnackBar(message: 'Successfully updated profile!');
+      if (mounted) {
+        context.showSnackBar(message: 'Successfully updated profile!');
+      }
     } on GotrueError catch (error) {
       context.showErrorSnackBar(message: error.message);
     } catch (error) {
@@ -93,7 +98,9 @@ class _AccountPageState extends State<AccountPage> {
     setState(() {
       _avatarUrl = imageUrl;
     });
-    context.showSnackBar(message: 'Updated your profile image!');
+    if (mounted) {
+      context.showSnackBar(message: 'Updated your profile image!');
+    }
   }
 
   @override
@@ -132,8 +139,9 @@ class _AccountPageState extends State<AccountPage> {
           ),
           const SizedBox(height: 18),
           ElevatedButton(
-              onPressed: _updateProfile,
-              child: Text(_loading ? 'Saving...' : 'Update')),
+            onPressed: _updateProfile,
+            child: Text(_loading ? 'Saving...' : 'Update'),
+          ),
           const SizedBox(height: 18),
           TextButton(onPressed: _signOut, child: const Text('Sign Out')),
         ],

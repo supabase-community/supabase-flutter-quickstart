@@ -12,7 +12,10 @@ class _SplashPageState extends State<SplashPage> {
   Future<void> redirect() async {
     try {
       final session = await SupabaseAuth.instance.initialSession;
-      print('session: $session');
+      if (!mounted) {
+        return;
+      }
+
       if (session != null) {
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/account', (route) => false);
@@ -21,7 +24,6 @@ class _SplashPageState extends State<SplashPage> {
             .pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (error) {
-      print('session error: ${error.toString()}');
       Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
     }
   }
