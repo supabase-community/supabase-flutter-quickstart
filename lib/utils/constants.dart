@@ -18,3 +18,5 @@ extension ShowSnackBar on BuildContext {
     showSnackBar(message: message, backgroundColor: Colors.red);
   }
 }
+
+const String unknownExceptionMessage = 'Unknown exception was thrown';

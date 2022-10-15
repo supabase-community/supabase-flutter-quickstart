@@ -24,13 +24,13 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.green,
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            primary: Colors.green,
+            foregroundColor: Colors.green,
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            onPrimary: Colors.white,
-            primary: Colors.green,
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.green,
           ),
         ),
       ),
