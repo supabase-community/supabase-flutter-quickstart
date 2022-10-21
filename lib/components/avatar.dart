@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase_quickstart/utils/constants.dart';
 
 class Avatar extends StatefulWidget {
@@ -63,18 +64,17 @@ class _AvatarState extends State<Avatar> {
     final fileExt = imageFile.path.split('.').last;
     final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
     final filePath = fileName;
-    final response =
-        await supabase.storage.from('avatars').uploadBinary(filePath, bytes);
+    try {
+      await supabase.storage.from('avatars').uploadBinary(filePath, bytes);
 
-    setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
 
-    final error = response.error;
-    if (error != null) {
+      final imageUrl = supabase.storage.from('avatars').getPublicUrl(filePath);
+      widget.onUpload(imageUrl);
+    } on StorageException catch (error) {
       context.showErrorSnackBar(message: error.message);
-      return;
+    } catch (error) {
+      context.showErrorSnackBar(message: 'Unknown exception occured');
     }
-    final imageUrlResponse =
-        supabase.storage.from('avatars').getPublicUrl(filePath);
-    widget.onUpload(imageUrlResponse.data!);
   }
 }

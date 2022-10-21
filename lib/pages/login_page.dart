@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase/supabase.dart';
-import 'package:supabase_quickstart/components/auth_state.dart';
 import 'package:supabase_quickstart/utils/constants.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,26 +10,28 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends AuthState<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   late final TextEditingController _emailController;
+  late final GotrueSubscription _gotrueSubscription;
 
   Future<void> _signIn() async {
     setState(() {
       _isLoading = true;
     });
-    final response = await supabase.auth.signIn(
-        email: _emailController.text,
-        options: AuthOptions(
-            redirectTo: kIsWeb
-                ? null
-                : 'io.supabase.flutterquickstart://login-callback/'));
-    final error = response.error;
-    if (error != null) {
-      context.showErrorSnackBar(message: error.message);
-    } else {
+    try {
+      await supabase.auth.signIn(
+          email: _emailController.text,
+          options: AuthOptions(
+              redirectTo: kIsWeb
+                  ? null
+                  : 'io.supabase.flutterquickstart://login-callback/'));
       context.showSnackBar(message: 'Check your email for login link!');
       _emailController.clear();
+    } on GoTrueException catch (error) {
+      context.showErrorSnackBar(message: error.message);
+    } catch (error) {
+      context.showErrorSnackBar(message: unknownExceptionMessage);
     }
 
     setState(() {
@@ -40,13 +41,21 @@ class _LoginPageState extends AuthState<LoginPage> {
 
   @override
   void initState() {
-    _emailController = TextEditingController();
     super.initState();
+    _emailController = TextEditingController();
+    bool navigationCalled = false;
+    _gotrueSubscription = supabase.auth.onAuthStateChange((event, session) {
+      if (session != null && !navigationCalled) {
+        navigationCalled = true;
+        Navigator.of(context).pushReplacementNamed('/account');
+      }
+    });
   }
 
   @override
   void dispose() {
     _emailController.dispose();
+    _gotrueSubscription.data?.unsubscribe();
     super.dispose();
   }
 
